@@ -1,9 +1,0 @@
-WARNING: line 63: possible infinite loop (backward jump)
-
---- Symbol Table ---
-count : 36
-fib : 37
-fib_done : 35
-fib_loop : 11
-
-Program assembled successfully.
