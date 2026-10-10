@@ -1,0 +1,21 @@
+                   ; test2.asm
+                   ; Test error handling
+                   label:
+                   label: ; duplicate label definiton
+        *** ERROR: line 4: duplicate label 'label' ***
+00000000 00000000  br nonesuch ; no such label
+        *** ERROR: line 5: undefined label 'nonesuch' ***
+00000001 00000000  ldc 08ge ; not a number
+        *** ERROR: line 6: undefined label '08ge' ***
+00000002 00000000  ldc ; missing operand
+        *** ERROR: line 7: missing operand for ldc ***
+00000003 00000006  add 5 ; unexpected operand
+        *** ERROR: line 8: unexpected operand for add ***
+00000004 00000000  ldc 5, 6; extra on end of line
+        *** ERROR: line 9: undefined label '5, 6' ***
+                   0def: ; bogus label name
+        *** ERROR: line 10: invalid label name '0def' ***
+00000005 00000000  fibble; bogus mnemonic
+        *** ERROR: line 11: unknown instruction 'fibble' ***
+00000006 00000000  0def ; bogus mnemonic
+        *** ERROR: line 12: unknown instruction '0def' ***

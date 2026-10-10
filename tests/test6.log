@@ -1,0 +1,14 @@
+WARNING: line 9: possible infinite loop (backward jump)
+WARNING: line 11: unused label 'afterLoop'
+WARNING: line 16: unused label 'neverUsedLabel'
+WARNING: line 1: unused label 'unused1'
+WARNING: line 2: unused label 'unused2'
+
+--- Symbol Table ---
+afterLoop : 4
+loop : 3
+neverUsedLabel : 7
+unused1 : 0
+unused2 : 0
+
+Program assembled successfully.

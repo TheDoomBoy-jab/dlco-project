@@ -1,0 +1,9 @@
+ERROR: line 1: invalid label name '1badlabel'
+ERROR: line 5: missing operand for ldc
+ERROR: line 7: unexpected operand for add
+ERROR: line 9: unknown instruction 'foo'
+ERROR: line 11: undefined label 'missing_label'
+ERROR: line 13: unknown instruction '//'
+ERROR: line 21: undefined symbol 'hello'
+
+--- Symbol Table ---

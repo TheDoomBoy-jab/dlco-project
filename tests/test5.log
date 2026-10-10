@@ -1,0 +1,11 @@
+WARNING: line 24: possible infinite loop (backward jump)
+WARNING: line 4: unused label 'start'
+
+--- Symbol Table ---
+count : 10
+done : 15
+loop : 5
+start : 1
+sum : 0
+
+Program assembled successfully.
