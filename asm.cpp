@@ -279,7 +279,7 @@ void savefiles(string base){
     for(auto &l : lines){
         char buf[64];
         if(l.hascode){
-            sprintf(buf, "%08X %08X  ", l.pc, (uint32_t)l.code);
+            snprintf(buf, sizeof(buf), "%08X %08X  ", l.pc, (uint32_t)l.code);
             lstfile << buf << l.raw << "\n";
         }else{
             lstfile << "                   " << l.raw << "\n";

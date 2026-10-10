@@ -1,0 +1,49 @@
+                   ; ==============================================================================
+                   ; Test Case: Polynomial Evaluation P(x) = 3*x^2 + 5*x + 7
+                   ; Author: Aahan Nayak
+                   ; Roll No: 2501AI21
+                   ;
+                   ; Description:
+                   ;   Computes 3*x^2 + 5*x + 7 for x = 4
+                   ;   Expected result: 3*(16) + 5*(4) + 7 = 48 + 20 + 7 = 75 (0x0000004B)
+                   ; ==============================================================================
+                   
+00000000 00001500          ldc x
+00000001 00000004          ldnl 0          ; A = x (4)
+                   
+                           ; Compute x^2 (using mul)
+00000002 00001500          ldc x
+00000003 00000004          ldnl 0          ; B = 4, A = 4
+00000004 00000013          mul             ; A = 16 (x^2)
+                   
+                           ; Multiply by 3
+00000005 00000300          ldc 3           ; B = 16, A = 3
+00000006 00000013          mul             ; A = 48 (3*x^2)
+                   
+                           ; Save term1 in stack
+00000007 00100000          ldc 0x1000
+00000008 0000000B          a2sp
+00000009 FFFFFE0A          adj -2
+0000000A 00000003          stl 0           ; stack[0] = 48
+                   
+                           ; Compute 5*x
+0000000B 00001500          ldc x
+0000000C 00000004          ldnl 0          ; A = 4
+0000000D 00000500          ldc 5           ; B = 4, A = 5
+0000000E 00000013          mul             ; A = 20 (5*x)
+                   
+                           ; Add 3*x^2 (stored in stack[0])
+0000000F 00000002          ldl 0           ; B = 20, A = 48
+00000010 00000006          add             ; A = 68
+                   
+                           ; Add constant 7
+00000011 00000701          adc 7           ; A = 75
+                   
+                           ; Store final result in memory
+00000012 00001600          ldc result
+00000013 00000005          stnl 0          ; result = 75
+00000014 00000012          HALT
+                   
+                   ; Data Section
+00000015 00000004  x:      data 4
+00000016 00000000  result: data 0
