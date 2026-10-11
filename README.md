@@ -1,3 +1,9 @@
+/*
+ * Declaration of Authorship:
+ * I declare that this assignment is my own work in accordance
+ * with IIT Patna Academic Honesty Policy.
+ */
+
 # IITPSx Architecture Toolchain
 A 32-Bit Computer Architecture, Two-Pass Assembler and Virtual Machine
 

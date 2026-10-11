@@ -1,3 +1,11 @@
+//name: Aahan Nayak
+//roll no: 2501AI21
+/*
+ * Declaration of Authorship:
+ * I declare that this assignment is my own work in accordance
+ * with IIT Patna Academic Honesty Policy.
+ */
+
 #include <iostream>
 #include <cstdlib>
 #include <string>
