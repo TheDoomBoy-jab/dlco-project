@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IITPSx Processor · Pixel RPG Simulator & IDE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        image-rendering: pixelated;
+    }
+
+    body {
+        background-color: #5e7775;
+        color: #ffffff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 10px;
+        line-height: 1.5;
+        padding: 16px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Pixel Window / Card Container */
+    .pixel-box {
+        background-color: #2d4341;
+        outline: 3px solid #000000;
+        border-top: 3px solid rgba(135, 195, 192, 0.55);
+        border-left: 3px solid rgba(135, 195, 192, 0.35);
+        border-right: 3px solid #14201f;
+        border-bottom: 3px solid #14201f;
+        box-shadow: 4px 4px 0 rgba(32, 45, 44, 0.7);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pixel-header {
+        color: rgb(255, 222, 76);
+        text-shadow: 2px 2px 0 #000;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+    }
+
+    /* Retro Pixel Buttons with Perfect Vertical Alignment */
+    button {
+        background-color: #2d4341;
+        outline: 3px solid #000000;
+        border: none;
+        border-top: 2px solid rgba(85, 151, 148, 0.7);
+        border-left: 2px solid rgba(85, 151, 148, 0.5);
+        border-right: 2px solid #14201f;
+        border-bottom: 2px solid #14201f;
+        box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+        color: rgb(255, 222, 76);
+        cursor: pointer;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 9px;
+        padding: 8px 12px;
+        text-shadow: 1px 1px 0 #000;
+        transition: transform 0.05s ease;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        line-height: 1;
+        vertical-align: middle;
+    }
+
+    button:hover:not(:disabled) {
+        background-color: #3b5654;
+        color: #ffffff;
+    }
+
+    button:active:not(:disabled) {
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0;
+    }
+
+    /* Disabled Button State */
+    button:disabled {
+        opacity: 0.38;
+        cursor: not-allowed;
+        box-shadow: none;
+        filter: grayscale(80%);
+    }
+
+    button .icon {
+        font-size: 8px;
+        line-height: 1;
+        display: inline-block;
+        transform: translateY(-0.5px);
+    }
+
+    button.btn-danger {
+        color: #ff7b7b;
+    }
+
+    /* Select Dropdown */
+    select {
+        background-color: #1f302e;
+        color: rgb(255, 222, 76);
+        outline: 3px solid #000;
+        border: none;
+        padding: 7px 10px;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 8px;
+        cursor: pointer;
+    }
+
+    /* Main Navigation Bar */
+    header.pixel-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .brand-title {
+        color: rgb(255, 222, 76);
+        font-size: 14px;
+        text-shadow: 3px 3px 0 #000;
+    }
+
+    .controls-bar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    /* 3-Column Layout */
+    .workspace-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr 1.25fr;
+        gap: 14px;
+        flex: 1;
+        min-height: 0;
+    }
+
+    /* Code Editor */
+    textarea#editor {
+        flex: 1;
+        background-color: #162423;
+        color: #7ef196;
+        outline: 2px solid #000;
+        border: none;
+        padding: 12px;
+        font-family: 'VT323', monospace;
+        font-size: 17px;
+        line-height: 1.35;
+        resize: none;
+        letter-spacing: 1px;
+    }
+
+    /* Register Display */
+    .reg-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .reg-cell {
+        background-color: #1a2a29;
+        outline: 2px solid #000;
+        padding: 8px;
+    }
+
+    .reg-name {
+        color: #92b7b5;
+        font-size: 7.5px;
+        margin-bottom: 4px;
+    }
+
+    .reg-data {
+        color: rgb(255, 222, 76);
+        font-family: 'VT323', monospace;
+        font-size: 16px;
+        text-shadow: 1px 1px 0 #000;
+    }
+
+    /* Console & Diagnostics */
+    .console-log {
+        height: 140px;
+        background-color: #14201f;
+        outline: 2px solid #000;
+        padding: 8px;
+        overflow-y: auto;
+        font-family: 'VT323', monospace;
+        font-size: 15px;
+        line-height: 1.3;
+        color: #b2dbd8;
+    }
+
+    .log-ok { color: #88ff9e; }
+    .log-err { color: #ff6b6b; }
+    .log-warn { color: rgb(255, 222, 76); }
+
+    /* Memory Table */
+    .table-container {
+        flex: 1;
+        overflow-y: auto;
+        background-color: #162423;
+        outline: 2px solid #000;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'VT323', monospace;
+        font-size: 15px;
+    }
+
+    th {
+        position: sticky;
+        top: 0;
+        background-color: #213533;
+        color: rgb(255, 222, 76);
+        padding: 6px 8px;
+        text-align: left;
+        border-bottom: 2px solid #000;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 7px;
+    }
+
+    td {
+        padding: 4px 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+        color: #cde4e2;
+    }
+
+    tr.is-active-pc {
+        background-color: rgba(255, 222, 76, 0.2);
+        color: rgb(255, 222, 76);
+    }
+
+    tr.is-modified-word {
+        background-color: rgba(85, 151, 148, 0.35);
+        color: #88ff9e;
+    }
+
+    /* Scrollbars pixelated */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #14201f; }
+    ::-webkit-scrollbar-thumb { background: #2d4341; outline: 1px solid #000; }
+</style>
+</head>
+<body>
+
+<!-- Pixel Navigation & Actions -->
+<header class="pixel-nav pixel-box" style="padding: 10px 14px;">
+    <div class="brand-title">IITPSx :: ARCH SIMULATOR</div>
+    <div class="controls-bar">
+        <select id="sampleSelect" onchange="loadSample()">
+            <option value="bubble">QUEST 1: BUBBLE SORT</option>
+            <option value="math">QUEST 2: MUL & DIV MATH</option>
+            <option value="loop">QUEST 3: 5-STEP COUNTER</option>
+        </select>
+        <button id="asmBtn" onclick="assemble()">[ASSEMBLE]</button>
+        <button id="stepBtn" onclick="step()" disabled title="Assemble program first!">[STEP]</button>
+        <button id="runBtn" onclick="toggleRun()" disabled title="Assemble program first!">[RUN <span class="icon">&#9654;</span>]</button>
+        <button class="btn-danger" onclick="resetCPU()">[RESET]</button>
+    </div>
+</header>
+
+<div class="workspace-grid">
+    <!-- 1. Code Editor -->
+    <div class="pixel-box">
+        <div class="pixel-header">
+            <span>&gt; SOURCE.ASM</span>
+            <span style="font-size: 7px; color: #87c3c0;">IITPSx ISA</span>
+        </div>
+        <textarea id="editor" spellcheck="false" oninput="markNeedsAssemble()"></textarea>
+    </div>
+
+    <!-- 2. CPU State & Registers -->
+    <div class="pixel-box">
+        <div class="pixel-header">
+            <span>&gt; CPU REGISTERS</span>
+            <span style="font-size: 7px; color: #87c3c0;">32-BIT WORDS</span>
+        </div>
+
+        <div class="reg-grid">
+            <div class="reg-cell">
+                <div class="reg-name">ACCUMULATOR (A)</div>
+                <div class="reg-data" id="regA">0x00000000</div>
+            </div>
+            <div class="reg-cell">
+                <div class="reg-name">SECONDARY (B)</div>
+                <div class="reg-data" id="regB">0x00000000</div>
+            </div>
+            <div class="reg-cell">
+                <div class="reg-name">PROG COUNTER (PC)</div>
+                <div class="reg-data" id="regPC">0x00000000</div>
+            </div>
+            <div class="reg-cell">
+                <div class="reg-name">STACK POINTER (SP)</div>
+                <div class="reg-data" id="regSP">0x00000000</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 10px; font-size: 8px; color: #87c3c0;">
+            <div style="margin-bottom: 4px;">OP: <span id="currInst" style="color: #fff;">IDLE</span></div>
+            <div style="margin-bottom: 6px;">CYCLES: <span id="cycleCount" style="color: #fff;">0</span></div>
+            <div>SPEED:
+                <input type="range" id="speedSlider" min="1" max="100" value="25" style="vertical-align: middle; accent-color: rgb(255, 222, 76);">
+            </div>
+        </div>
+
+        <div class="pixel-header">
+            <span>&gt; SYSTEM LOG</span>
+        </div>
+        <div class="console-log" id="consoleLog">
+            <div class="log-warn">&gt; INSTRUCTION: CLICK [ASSEMBLE] TO BUILD CODE!</div>
+        </div>
+    </div>
+
+    <!-- 3. Memory Visualizer -->
+    <div class="pixel-box">
+        <div class="pixel-header">
+            <span>&gt; MEMORY GRID</span>
+            <span style="font-size: 7px; color: #87c3c0;">RAM VIEW</span>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ADDR</th>
+                        <th>HEX WORD</th>
+                        <th>DEC</th>
+                        <th>LABEL</th>
+                    </tr>
+                </thead>
+                <tbody id="memBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+const SAMPLES = {
+  bubble: `; In-Place Bubble Sort in IITPSx Assembly
+        ldc 0x1000
+        a2sp
+        call sort
+        HALT
+
+sort:   adj -6
+        stl 2
+        ldc 0
+        stl 0
+
+outer:  ldc count
+        ldnl 0
+        adc -1
+        ldl 0
+        sub
+        brlz done
+        brz done
+
+        ldc 0
+        stl 1
+
+inner:  ldc count
+        ldnl 0
+        adc -1
+        ldl 0
+        sub
+        ldl 1
+        sub
+        brlz next_i
+        brz next_i
+
+        ldc array
+        ldl 1
+        add
+        stl 3
+
+        ldl 3
+        ldnl 0
+        stl 4
+
+        ldl 3
+        ldnl 1
+        stl 5
+
+        ldl 4
+        ldl 5
+        sub
+        brz no_swap
+        brlz no_swap
+
+        ldl 4
+        ldl 3
+        stnl 1
+
+        ldl 5
+        ldl 3
+        stnl 0
+
+no_swap:
+        ldl 1
+        adc 1
+        stl 1
+        br inner
+
+next_i: ldl 0
+        adc 1
+        stl 0
+        br outer
+
+done:   ldl 2
+        adj 6
+        return
+
+count:  data 6
+array:  data 25
+        data -4
+        data 10
+        data 0
+        data -15
+        data 8`,
+
+  math: `; Arithmetic Extensions: mul & div
+        ldc 15
+        ldc 4
+        mul
+        ldc 2
+        div
+        HALT`,
+
+  loop: `; 1 to 5 Counter Accumulator
+        ldc 0
+loop:   adc 1
+        ldc 5
+        sub
+        brz done
+        adc 5
+        br loop
+done:   HALT`
+};
+
+const OPCODES = {
+  ldc: 0, adc: 1, ldl: 2, stl: 3, ldnl: 4, stnl: 5,
+  add: 6, sub: 7, shl: 8, shr: 9, adj: 10, a2sp: 11,
+  sp2a: 12, call: 13, return: 14, brz: 15, brlz: 16, br: 17,
+  HALT: 18, halt: 18, mul: 19, div: 20
+};
+
+let memory = new Int32Array(4096);
+let initialMem = new Int32Array(4096);
+let A = 0, B = 0, PC = 0, SP = 0;
+let cycles = 0, halted = false, isRunning = null;
+let labels = {};
+let codeSize = 0;
+let isAssembled = false;
+
+function setRunControls(enabled) {
+  isAssembled = enabled;
+  document.getElementById('stepBtn').disabled = !enabled;
+  document.getElementById('runBtn').disabled = !enabled;
+}
+
+function markNeedsAssemble() {
+  if (isAssembled) {
+    setRunControls(false);
+    log("CODE MODIFIED: CLICK [ASSEMBLE] BEFORE RUNNING!", "log-warn");
+  }
+}
+
+function loadSample() {
+  const sel = document.getElementById('sampleSelect').value;
+  document.getElementById('editor').value = SAMPLES[sel];
+  setRunControls(false);
+  resetCPU();
+  log("LOADED SAMPLE: CLICK [ASSEMBLE] TO BUILD!", "log-warn");
+}
+
+function log(msg, cls="") {
+  const box = document.getElementById('consoleLog');
+  box.innerHTML += `<div class="${cls}">&gt; ${msg}</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+function assemble() {
+  resetCPU();
+  document.getElementById('consoleLog').innerHTML = "";
+  const lines = document.getElementById('editor').value.split('\n');
+  labels = {};
+  let currentPC = 0;
+  let parsed = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    let raw = lines[i];
+    let line = raw.split(';')[0].trim();
+    if (!line) continue;
+
+    let label = "", mnem = "", op = "";
+    if (line.includes(':')) {
+      let parts = line.split(':');
+      label = parts[0].trim();
+      line = parts.slice(1).join(':').trim();
+      labels[label] = currentPC;
+    }
+
+    if (line) {
+      let tokens = line.split(/\s+/);
+      mnem = tokens[0];
+      op = tokens.slice(1).join(' ').trim();
+      if (mnem === "SET") {
+        labels[label] = parseInt(op);
+      } else {
+        currentPC++;
+      }
+    }
+    parsed.push({ raw, label, mnem, op, pc: currentPC - 1 });
+  }
+
+  codeSize = 0;
+  for (let item of parsed) {
+    if (!item.mnem || item.mnem === "SET") continue;
+    let opcode = OPCODES[item.mnem];
+    let operand = 0;
+
+    if (item.mnem === "data") {
+      operand = labels[item.op] !== undefined ? labels[item.op] : parseInt(item.op) || 0;
+      memory[codeSize] = operand;
+    } else if (opcode !== undefined) {
+      if (item.op) {
+        if (labels[item.op] !== undefined) {
+          if (["call", "brz", "brlz", "br"].includes(item.mnem)) {
+            operand = labels[item.op] - (item.pc + 1);
+          } else {
+            operand = labels[item.op];
+          }
+        } else {
+          operand = parseInt(item.op) || 0;
+        }
+      }
+      memory[codeSize] = ((operand & 0x00FFFFFF) << 8) | (opcode & 0xFF);
+    }
+    codeSize++;
+  }
+
+  for (let i = 0; i < memory.length; i++) initialMem[i] = memory[i];
+  log(`ASSEMBLED OK! ${codeSize} WORDS EMITTED.`, "log-ok");
+  setRunControls(true);
+  updateUI();
+}
+
+function step() {
+  if (!isAssembled) {
+    log("ERROR: ASSEMBLE PROGRAM FIRST!", "log-err");
+    return;
+  }
+  if (halted) return;
+  if (PC < 0 || PC >= memory.length) {
+    log(`SEGFAULT: PC OUT OF BOUNDS`, "log-err");
+    halted = true;
+    return;
+  }
+
+  let inst = memory[PC];
+  let prevPC = PC;
+  PC++;
+  cycles++;
+
+  let opcode = inst & 0xFF;
+  let operand = (inst >> 8);
+  if (operand & 0x00800000) operand |= (~0x00FFFFFF);
+
+  const mnemName = Object.keys(OPCODES).find(k => OPCODES[k] === opcode) || "???";
+  document.getElementById('currInst').innerText = `${mnemName} ${operand}`;
+
+  switch (opcode) {
+    case 0: B = A; A = operand; break;
+    case 1: A = (A + operand) | 0; break;
+    case 2: B = A; A = memory[SP + operand]; break;
+    case 3: memory[SP + operand] = A; A = B; break;
+    case 4: A = memory[A + operand]; break;
+    case 5: memory[A + operand] = B; break;
+    case 6: A = (B + A) | 0; break;
+    case 7: A = (B - A) | 0; break;
+    case 8: A = (B << A) | 0; break;
+    case 9: A = (B >> A) | 0; break;
+    case 10: SP = (SP + operand) | 0; break;
+    case 11: SP = A; A = B; break;
+    case 12: B = A; A = SP; break;
+    case 13: B = A; A = PC; PC = (PC + operand) | 0; break;
+    case 14: PC = A; A = B; break;
+    case 15: if (A === 0) PC = (PC + operand) | 0; break;
+    case 16: if (A < 0) PC = (PC + operand) | 0; break;
+    case 17: PC = (PC + operand) | 0; break;
+    case 18: halted = true; log("HALT INSTRUCTION REACHED.", "log-ok"); break;
+    case 19: A = (B * A) | 0; break;
+    case 20:
+      if (A === 0) { log(`DIV/0 ERROR AT PC=0x${prevPC.toString(16)}`, "log-err"); halted = true; }
+      else A = Math.trunc(B / A);
+      break;
+  }
+  updateUI();
+}
+
+function toggleRun() {
+  if (!isAssembled) {
+    log("ERROR: ASSEMBLE PROGRAM FIRST!", "log-err");
+    return;
+  }
+  if (isRunning) {
+    clearInterval(isRunning);
+    isRunning = null;
+    document.getElementById('runBtn').innerHTML = `[RUN <span class="icon">&#9654;</span>]`;
+  } else {
+    document.getElementById('runBtn').innerHTML = `[PAUSE <span class="icon">&#10074;&#10074;</span>]`;
+    let speed = document.getElementById('speedSlider').value;
+    isRunning = setInterval(() => {
+      if (halted) {
+        clearInterval(isRunning);
+        isRunning = null;
+        document.getElementById('runBtn').innerHTML = `[RUN <span class="icon">&#9654;</span>]`;
+        return;
+      }
+      step();
+    }, 1000 / speed);
+  }
+}
+
+function resetCPU() {
+  if (isRunning) { clearInterval(isRunning); isRunning = null; }
+  document.getElementById('runBtn').innerHTML = `[RUN <span class="icon">&#9654;</span>]`;
+  A = 0; B = 0; PC = 0; SP = 0; cycles = 0; halted = false;
+  for (let i = 0; i < memory.length; i++) memory[i] = initialMem[i];
+  document.getElementById('currInst').innerText = "IDLE";
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('regA').innerText = `0x${(A >>> 0).toString(16).padStart(8, '0').toUpperCase()}`;
+  document.getElementById('regB').innerText = `0x${(B >>> 0).toString(16).padStart(8, '0').toUpperCase()}`;
+  document.getElementById('regPC').innerText = `0x${(PC >>> 0).toString(16).padStart(8, '0').toUpperCase()}`;
+  document.getElementById('regSP').innerText = `0x${(SP >>> 0).toString(16).padStart(8, '0').toUpperCase()}`;
+  document.getElementById('cycleCount').innerText = cycles;
+
+  const memBody = document.getElementById('memBody');
+  memBody.innerHTML = "";
+  let displayLimit = Math.max(codeSize + 10, 32);
+  for (let i = 0; i < displayLimit; i++) {
+    let hex = (memory[i] >>> 0).toString(16).padStart(8, '0').toUpperCase();
+    let isCurrPC = (i === PC);
+    let isModified = (memory[i] !== initialMem[i]);
+    let labelName = Object.keys(labels).find(k => labels[k] === i) || "";
+
+    memBody.innerHTML += `
+      <tr class="${isCurrPC ? 'is-active-pc' : ''} ${isModified ? 'is-modified-word' : ''}">
+        <td>0x${i.toString(16).padStart(4, '0').toUpperCase()}</td>
+        <td>${hex}</td>
+        <td>${memory[i]}</td>
+        <td style="color: rgb(255, 222, 76);">${labelName}</td>
+      </tr>
+    `;
+  }
+}
+
+// Initial setup: start with default sample in editor
+document.getElementById('editor').value = SAMPLES['bubble'];
+setRunControls(false);
+</script>
+</body>
+</html>

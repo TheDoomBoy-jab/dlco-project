@@ -3,7 +3,7 @@ Name: Aahan Nayak
 Roll No: 2501AI21
 
 1. GENERAL COMPLIANCE AND AUTHORSHIP
-- All source files contain author name and roll number at the top.
+- All source files contain author name, roll number, and declaration of authorship.
 - Code compiles cleanly with zero errors and zero warnings using:
   clang++ -std=c++17 -Wall -Wextra -O2
 - Complete Makefile provided with targets for all, asm, emu, app, test, and clean.
@@ -31,12 +31,25 @@ Roll No: 2501AI21
 - Loads and executes 32-bit binary object files (.o).
 - Implements all four registers: Accumulator (A), Secondary (B), Program Counter (PC), and Stack Pointer (SP).
 - Implements implicit PC pre-increment on instruction fetch.
-- Supports all 21 ISA instructions.
+- Supports all 21 ISA instructions:
+  ldc, adc, ldl, stl, ldnl, stnl, add, sub, shl, shr, adj, a2sp, sp2a, call, return, brz, brlz, br, HALT, mul, div.
 - Command-line execution flags:
   * -trace: Step-by-step register and instruction trace
   * -before: Hexadecimal memory dump before execution
   * -after: Hexadecimal memory dump after execution
   * -isa: Complete instruction set reference table
 - Safety traps and error detection:
-  * Division by zero runtime trap on div instruction
-  * Memory
+  * Division by zero runtime trap on div instruction (halts with diagnostic message)
+  * Memory boundary / segmentation bounds checking
+  * Unknown opcode traps
+  * Infinite runaway execution cycle guard (MAX_CYCLES)
+
+4. BUBBLE SORT & TEST CASES (15 Percent Category)
+- bubblesort.asm:
+  * In-place bubble sort algorithm written in IITPSx assembly language.
+  * Successfully sorts 32-bit signed integers in ascending order.
+  * Correctness verified via memory dumps (-before and -after).
+- test_math.asm:
+  * Tests arithmetic mean calculation and scaling using extension opcodes mul and div.
+- tests/test1.asm through tests/test7.asm:
+  * Comprehensive test suite covering valid operations, branch offsets, subroutine calling frames, labels, and syntax error detection.
